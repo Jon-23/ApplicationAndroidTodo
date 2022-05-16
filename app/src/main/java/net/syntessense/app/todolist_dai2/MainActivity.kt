@@ -9,36 +9,14 @@ import android.text.TextWatcher
 import android.view.*
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import net.syntessense.app.todolist_dai2.databinding.ActivityMainBinding
+import net.syntessense.app.todolist_dai2.databinding.ListItemBinding
+import org.w3c.dom.Text
 
-class MyAdapter(private val context: Context, private var size:Int = 0) : BaseAdapter() {
-
-    override fun getCount(): Int {
-        return size
-    }
-
-    override fun getItem(i: Int): String {
-        return "ToDo number $i"
-    }
-
-    override fun getItemId(i: Int): Long {
-        return i.toLong()
-    }
-
-    override fun getView(i: Int, convertView: View?, parent: ViewGroup?): View {
-        val tv = (convertView ?: LayoutInflater.from(context).inflate(R.layout.list_item, parent, false)) as TextView
-        tv.text = getItem(i)
-        return tv
-    }
-
-    fun add() {
-        size += 10
-    }
-
-}
 
 class TodoAdapter(private val context: Activity, private val todoDao: TodoDao) : BaseAdapter() {
 
@@ -84,9 +62,17 @@ class TodoAdapter(private val context: Activity, private val todoDao: TodoDao) :
     }
 
     override fun getView(i: Int, convertView: View?, parent: ViewGroup?): View {
-        val tv = (convertView ?: LayoutInflater.from(context).inflate(R.layout.list_item, parent, false)) as TextView
-        tv.text = todos[i].title
-        return tv
+
+        val binding = if( convertView != null) ListItemBinding.bind(convertView) else ListItemBinding.inflate(context.layoutInflater,parent,false)
+
+
+        /*val cl = (convertView ?: LayoutInflater.from(context).inflate(R.layout.list_item, parent, false)) as ConstraintLayout
+        val tv = cl.findViewById<TextView>(R.id.item)
+        val pr = cl.findViewById<TextView>(R.id.priority_color)*/
+
+        binding.priorityColor.setBackgroundColor(todos[i].priority.color)
+        binding.item.text = todos[i].title
+        return binding.root
     }
 
 }
